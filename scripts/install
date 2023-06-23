@@ -117,12 +117,12 @@ ynh_script_progression --message="Starting a supervisor service..." --weight=1
 
 
 # Create new user (without email verification)
-pushd $install_dir
-	php$phpversion bin/console kbin:user:create $admin $email $password
-	# Grant administrator privileges
-	php$phpversion bin/console kbin:user:admin $admin
-	php$phpversion bin/console kbin:ap:keys:update
-popd
+#pushd $install_dir
+#	php$phpversion bin/console kbin:user:create $admin $email $password
+#	# Grant administrator privileges
+#	php$phpversion bin/console kbin:user:admin $admin
+#	php$phpversion bin/console kbin:ap:keys:update
+#popd
 
 #=================================================
 # END OF SCRIPT
