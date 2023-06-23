@@ -1,1 +1,1 @@
-This is a dummy description of this app features
+Kbin is a decentralized content aggregator and microblogging platform running on the Fediverse network.

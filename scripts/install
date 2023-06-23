@@ -35,7 +35,7 @@ chown -R $app:www-data "$install_dir"
 ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
 
 # Create a dedicated PHP-FPM config using the conf/php-fpm.conf or conf/extra_php-fpm.conf
-ynh_add_fpm_config
+ynh_add_fpm_config --usage=low --footprint=low
 
 # Create a dedicated NGINX config using the conf/nginx.conf template
 ynh_add_nginx_config
@@ -45,11 +45,14 @@ ynh_add_systemd_config
 
 yunohost service add $app --description="A short description of the app" --log="/var/log/$app/$app.log"
 
-# Use logrotate to manage application logfile(s)
-ynh_use_logrotate
+#=================================================
+# INSTALL KBIN WITH COMPOSER
+#=================================================
+ynh_script_progression --message="Installing $app with Composer..." --weight=5
 
-# Create a dedicated Fail2Ban config
-ynh_add_fail2ban_config --logpath="/var/log/nginx/${domain}-error.log" --failregex="Regex to match into the log for a failed login"
+# Install composer
+#ynh_install_composer --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress
+ynh_exec_warn_less ynh_install_composer --phpversion="$phpversion" --composerversion="$YNH_COMPOSER_VERSION" --workdir="$install_dir"
 
 #=================================================
 # APP INITIAL CONFIGURATION
@@ -58,20 +61,62 @@ ynh_add_fail2ban_config --logpath="/var/log/nginx/${domain}-error.log" --failreg
 #=================================================
 ynh_script_progression --message="Adding a configuration file..." --weight=1
 
-ynh_add_config --template="some_config_file" --destination="$install_dir/some_config_file"
+ynh_add_config --template="../conf/.env.example" --destination="$install_dir/.env"
 
-chmod 400 "$install_dir/some_config_file"
-chown $app:$app "$install_dir/some_config_file"
+chmod 400 "$install_dir/.env"
+chown $app:$app "$install_dir/.env"
+
+
+
+
+pushd $install_dir
+	php bin/console doctrine:database:create
+	php bin/console doctrine:migrations:migrate
+popd
+
+#=================================================
+# INSTALL KBIN
+#=================================================
+ynh_script_progression --message="Installing $app..." --weight=10
+
+pushd $install_dir
+ 	ynh_use_nodejs
+	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH yarn install
+	ynh_exec_warn_less sudo -u $app env $ynh_node_load_PATH NODE_ENV=production yarn build
+popd
+
+#=================================================
+# SETUP SUPERVISOR
+#=================================================
+ynh_script_progression --message="Configuring a supervisor service..." --weight=1
+
+# Create a dedicated supervisor config
+ynh_add_supervisor_config --service="$app" --template=messenger-worker.conf
+
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
+
+yunohost service add "supervisor" --description="Supervisor daemon for $app" --log="/var/log/$app/$app.log"
+
+#=================================================
+# START SUPERVISOR SERVICE
+#=================================================
+ynh_script_progression --message="Starting a supervisor service..." --weight=1
+
+# Start a supervisor service
+ynh_supervisor_action --service_name="$app" --action="reload" --log_path="systemd" #--line_match="success: $app"
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+#ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+#ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
 
 #=================================================
 # END OF SCRIPT
