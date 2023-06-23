@@ -57,6 +57,14 @@ ynh_secure_remove --file="/etc/$app"
 ynh_secure_remove --file="/var/log/$app"
 
 #=================================================
+# REMOVE DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Removing dependencies..." --weight=1
+
+# Remove NodeJS
+ynh_remove_nodejs
+
+#=================================================
 # END OF SCRIPT
 #=================================================
 
