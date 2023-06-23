@@ -75,12 +75,12 @@ ynh_add_supervisor_config --service="$app" --template=messenger-worker.conf
 #=================================================
 # DEPLOY
 #=================================================
-ynh_script_progression --message="Deploying..." --weight=1
+#ynh_script_progression --message="Deploying..." --weight=1
 
-pushd $install_dir
-	php$phpversion bin/console doctrine:database:create
-	php$phpversion bin/console doctrine:migrations:migrate
-popd
+#pushd $install_dir
+#	php$phpversion bin/console doctrine:database:create
+#	php$phpversion bin/console doctrine:migrations:migrate
+#popd
 
 #=================================================
 # INSTALL KBIN
