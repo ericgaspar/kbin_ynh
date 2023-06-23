@@ -82,10 +82,10 @@ ynh_add_supervisor_config --service="$app" --template=messenger-worker.conf
 #=================================================
 #ynh_script_progression --message="Deploying..." --weight=1
 
-#pushd $install_dir
-#	php$phpversion bin/console doctrine:database:create
-#	php$phpversion bin/console doctrine:migrations:migrate
-#popd
+pushd $install_dir
+	php$phpversion bin/console doctrine:database:create
+	php$phpversion bin/console doctrine:migrations:migrate
+popd
 
 #=================================================
 # INSTALL KBIN
@@ -115,12 +115,12 @@ ynh_script_progression --message="Starting a supervisor service..." --weight=1
 
 
 # Create new user (without email verification)
-#pushd $install_dir
-#	php$phpversion bin/console kbin:user:create $admin $email $password
-#	# Grant administrator privileges
-#	php$phpversion bin/console kbin:user:admin $admin
-#	php$phpversion bin/console kbin:ap:keys:update
-#popd
+pushd $install_dir
+	php$phpversion bin/console kbin:user:create $admin $email $password
+	# Grant administrator privileges
+	php$phpversion bin/console kbin:user:admin $admin
+	php$phpversion bin/console kbin:ap:keys:update
+popd
 
 #=================================================
 # END OF SCRIPT
