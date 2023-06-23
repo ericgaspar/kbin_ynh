@@ -51,11 +51,11 @@ ynh_add_nginx_config
 ynh_script_progression --message="Installing $app with Composer..." --weight=5
 
 # Install composer
-ynh_install_composer --phpversion="$phpversion" --composerversion="$YNH_COMPOSER_VERSION" --workdir="$install_dir" --install_args="--prefer-dist --no-dev --no-autoloader --no-scripts --no-progress"
+ynh_install_composer --phpversion="$phpversion" --composerversion="$YNH_COMPOSER_VERSION" --workdir="$install_dir" --install_args="--prefer-dist --no-autoloader --no-scripts --no-progress" #--no-dev
 
-#pushd $install_dir
-#	php$phpversion bin/console cache:clear
-#popd
+pushd $install_dir
+	php$phpversion bin/console cache:clear
+popd
 
 ynh_composer_exec --commands="clear-cache"
 
