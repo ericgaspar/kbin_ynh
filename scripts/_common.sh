@@ -20,8 +20,6 @@ YNH_COMPOSER_VERSION="2.2.21"
 # FUTURE OFFICIAL HELPERS
 #=================================================
 
-#=================================================
-
 
 # Create a dedicated supervisor config
 #
