@@ -9,6 +9,8 @@
 source _common.sh
 source /usr/share/yunohost/helpers
 
+email=$(ynh_user_get_info --username=$admin --key=mail)
+
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
@@ -112,6 +114,15 @@ ynh_script_progression --message="Starting a supervisor service..." --weight=1
 
 # Start a supervisor service
 #ynh_supervisor_action --service_name="$app" --action="reload" --log_path="systemd" #--line_match="success: $app"
+
+
+# Create new user (without email verification)
+pushd $install_dir
+	php$phpversion bin/console kbin:user:create $admin $email $password
+	# Grant administrator privileges
+	php$phpversion bin/console kbin:user:admin $admin
+	php$phpversion bin/console kbin:ap:keys:update
+popd
 
 #=================================================
 # END OF SCRIPT
