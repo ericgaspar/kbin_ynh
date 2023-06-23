@@ -106,7 +106,7 @@ yunohost service add "supervisor" --description="Supervisor daemon for $app" --l
 ynh_script_progression --message="Starting a supervisor service..." --weight=1
 
 # Start a supervisor service
-ynh_supervisor_action --service_name="$app" --action="reload" --log_path="systemd" #--line_match="success: $app"
+#ynh_supervisor_action --service_name="$app" --action="reload" --log_path="systemd" #--line_match="success: $app"
 
 #=================================================
 # END OF SCRIPT
